@@ -6,20 +6,19 @@ var express = require('express'),
     bodyParser = require('body-parser');
 
 var db = require('./model/db'),
-    blob = require('./model/blobs'),
-    price = require('./model/prices');
+    blob = require('./model/blobs');
 
 var routes = require('./routes/index'),
-    blobs = require('./routes/blobs'),
-    prices = require('./routes/prices');
+    blobs = require('./routes/blobs');
+
 //var users = require('./routes/users');
 
 var app = express();
-//http.createServer(app).listen('40050','140.112.48.141');
-//app.get('/', function(req, res){
-//  res.set('Content-Type', 'text/plain');
-//  res.send('hello world');
-//});
+http.createServer(app).listen('40050','140.112.48.141');
+app.get('/', function(req, res){
+  res.set('Content-Type', 'text/plain');
+  res.send('hello world');
+});
 
 
 
@@ -37,7 +36,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/blobs', blobs);
-app.use('/prices', prices);
 //app.use('/users', users);
 
 // catch 404 and forward to error handler

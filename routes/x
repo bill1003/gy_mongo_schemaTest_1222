@@ -15,35 +15,34 @@ router.use(methodOverride(function(req, res){
         return method
       }
 }))
-
-//build the REST operations at the base for blobs
-//this will be accessible from http://127.0.0.1:3000/blobs if the default route for / is left unchanged
+//build the REST operations at the base for price
+//this will be accessible from http://127.0.0.1:3000/price if the default route for / is left unchanged
 router.route('/')
-    //GET all blobs
+    //GET all price
     .get(function(req, res, next) {
-        //retrieve all blobs from Monogo
-        mongoose.model('Blob').find({}, function (err, blobs) {
+        //retrieve all price from Monogo
+        mongoose.model('price').find({}, function (err, price) {
               if (err) {
                   return console.error(err);
               } else {
                   //respond to both HTML and JSON. JSON responses require 'Accept: application/json;' in the Request Header
                   res.format({
-                      //HTML response will render the index.jade file in the views/blobs folder. We are also setting "blobs" to be an accessible variable in our jade view
+                      //HTML response will render the index.jade file in the views/price folder. We are also setting "price" to be an accessible variable in our jade view
                     html: function(){
-                        res.render('blobs/index', {
-                              title: 'All my Blobs',
-                              "blobs" : blobs
+                        res.render('price/index', {
+                              title: 'All my prices',
+                              "price" : price
                           });
                     },
-                    //JSON response will show all blobs in JSON format
+                    //JSON response will show all price in JSON format
                     json: function(){
-                        res.json(blobs);
+                        res.json(price);
                     }
                 });
               }     
         });
     })
-    //POST a new blob
+    //POST a new price
     .post(function(req, res) {
         // Get values from POST request. These can be done through forms or REST calls. These rely on the "name" attributes for forms
         var name = req.body.name;
@@ -52,44 +51,44 @@ router.route('/')
         var company = req.body.company;
         var isloved = req.body.isloved;
         //call the create function for our database
-        mongoose.model('Blob').create({
+        mongoose.model('price').create({
             name : name,
             badge : badge,
             dob : dob,
             isloved : isloved
-        }, function (err, blob) {
+        }, function (err, price) {
               if (err) {
                   res.send("There was a problem adding the information to the database.");
               } else {
-                  //Blob has been created
-                  console.log('POST creating new blob: ' + blob);
+                  //price has been created
+                  console.log('POST creating new price: ' + price);
                   res.format({
                       //HTML response will set the location and redirect back to the home page. You could also create a 'success' page if that's your thing
                     html: function(){
                         // If it worked, set the header so the address bar doesn't still say /adduser
-                        res.location("blobs");
+                        res.location("price");
                         // And forward to success page
-                        res.redirect("/blobs");
+                        res.redirect("/price");
                     },
-                    //JSON response will show the newly created blob
+                    //JSON response will show the newly created price
                     json: function(){
-                        res.json(blob);
+                        res.json(price);
                     }
                 });
               }
         })
     });
 
-/* GET New Blob page. */
+/* GET New price page. */
 router.get('/new', function(req, res) {
-    res.render('blobs/new', { title: 'Add New Blob' });
+    res.render('price/new', { title: 'Add New price' });
 });
 
 // route middleware to validate :id
 router.param('id', function(req, res, next, id) {
     //console.log('validating ' + id + ' exists');
     //find the ID in the Database
-    mongoose.model('Blob').findById(id, function (err, blob) {
+    mongoose.model('price').findById(id, function (err, price) {
         //if it isn't found, we are going to repond with 404
         if (err) {
             console.log(id + ' was not found');
@@ -107,7 +106,7 @@ router.param('id', function(req, res, next, id) {
         //if it is found we continue on
         } else {
             //uncomment this next line if you want to see every JSON document response for every GET/PUT/DELETE call
-            //console.log(blob);
+            //console.log(price);
             // once validation is done save the new item in the req
             req.id = id;
             // go to the next thing
@@ -118,22 +117,22 @@ router.param('id', function(req, res, next, id) {
 
 router.route('/:id')
   .get(function(req, res) {
-    mongoose.model('Blob').findById(req.id, function (err, blob) {
+    mongoose.model('price').findById(req.id, function (err, price) {
       if (err) {
         console.log('GET Error: There was a problem retrieving: ' + err);
       } else {
-        console.log('GET Retrieving ID: ' + blob._id);
-        var blobdob = blob.dob.toISOString();
-        blobdob = blobdob.substring(0, blobdob.indexOf('T'))
+        console.log('GET Retrieving ID: ' + price._id);
+        var pricedob = price.dob.toISOString();
+        pricedob = pricedob.substring(0, pricedob.indexOf('T'))
         res.format({
           html: function(){
-              res.render('blobs/show', {
-                "blobdob" : blobdob,
-                "blob" : blob
+              res.render('price/show', {
+                "pricedob" : pricedob,
+                "price" : price
               });
           },
           json: function(){
-              res.json(blob);
+              res.json(price);
           }
         });
       }
@@ -141,35 +140,35 @@ router.route('/:id')
   });
 
 router.route('/:id/edit')
-	//GET the individual blob by Mongo ID
+	//GET the individual price by Mongo ID
 	.get(function(req, res) {
-	    //search for the blob within Mongo
-	    mongoose.model('Blob').findById(req.id, function (err, blob) {
+	    //search for the price within Mongo
+	    mongoose.model('price').findById(req.id, function (err, price) {
 	        if (err) {
 	            console.log('GET Error: There was a problem retrieving: ' + err);
 	        } else {
-	            //Return the blob
-	            console.log('GET Retrieving ID: ' + blob._id);
-              var blobdob = blob.dob.toISOString();
-              blobdob = blobdob.substring(0, blobdob.indexOf('T'))
+	            //Return the price
+	            console.log('GET Retrieving ID: ' + price._id);
+              var pricedob = price.dob.toISOString();
+              pricedob = pricedob.substring(0, pricedob.indexOf('T'))
 	            res.format({
 	                //HTML response will render the 'edit.jade' template
 	                html: function(){
-	                       res.render('blobs/edit', {
-	                          title: 'Blob' + blob._id,
-                            "blobdob" : blobdob,
-	                          "blob" : blob
+	                       res.render('price/edit', {
+	                          title: 'price' + price._id,
+                            "pricedob" : pricedob,
+	                          "price" : price
 	                      });
 	                 },
 	                 //JSON response will return the JSON output
 	                json: function(){
-	                       res.json(blob);
+	                       res.json(price);
 	                 }
 	            });
 	        }
 	    });
 	})
-	//PUT to update a blob by ID
+	//PUT to update a price by ID
 	.put(function(req, res) {
 	    // Get our REST or form values. These rely on the "name" attributes
 	    var name = req.body.name;
@@ -179,14 +178,14 @@ router.route('/:id/edit')
 	    var isloved = req.body.isloved;
 
 	    //find the document by ID
-	    mongoose.model('Blob').findById(req.id, function (err, blob) {
+	    mongoose.model('price').findById(req.id, function (err, price) {
 	        //update it
-	        blob.update({
+	        price.update({
 	            name : name,
 	            badge : badge,
 	            dob : dob,
 	            isloved : isloved
-	        }, function (err, blobID) {
+	        }, function (err, priceID) {
 	          if (err) {
 	              res.send("There was a problem updating the information to the database: " + err);
 	          } 
@@ -194,40 +193,40 @@ router.route('/:id/edit')
 	                  //HTML responds by going back to the page or you can be fancy and create a new view that shows a success page.
 	                  res.format({
 	                      html: function(){
-	                           res.redirect("/blobs/" + blob._id);
+	                           res.redirect("/price/" + price._id);
 	                     },
 	                     //JSON responds showing the updated values
 	                    json: function(){
-	                           res.json(blob);
+	                           res.json(price);
 	                     }
 	                  });
 	           }
 	        })
 	    });
 	})
-	//DELETE a Blob by ID
+	//DELETE a price by ID
 	.delete(function (req, res){
-	    //find blob by ID
-	    mongoose.model('Blob').findById(req.id, function (err, blob) {
+	    //find price by ID
+	    mongoose.model('price').findById(req.id, function (err, price) {
 	        if (err) {
 	            return console.error(err);
 	        } else {
 	            //remove it from Mongo
-	            blob.remove(function (err, blob) {
+	            price.remove(function (err, price) {
 	                if (err) {
 	                    return console.error(err);
 	                } else {
 	                    //Returning success messages saying it was deleted
-	                    console.log('DELETE removing ID: ' + blob._id);
+	                    console.log('DELETE removing ID: ' + price._id);
 	                    res.format({
 	                        //HTML returns us back to the main page, or you can create a success page
 	                          html: function(){
-	                               res.redirect("/blobs");
+	                               res.redirect("/price");
 	                         },
 	                         //JSON returns the item with the message that is has been deleted
 	                        json: function(){
 	                               res.json({message : 'deleted',
-	                                   item : blob
+	                                   item : price
 	                               });
 	                         }
 	                      });

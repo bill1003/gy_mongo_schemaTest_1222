@@ -4,6 +4,7 @@ var express = require('express'),
     bodyParser = require('body-parser'), //parses information from POST
     methodOverride = require('method-override'); //used to manipulate POST
 
+
 //Any requests to this controller must pass through this 'use' function
 //Copy and pasted from method-override
 router.use(bodyParser.urlencoded({ extended: true }))
@@ -16,80 +17,99 @@ router.use(methodOverride(function(req, res){
       }
 }))
 
-//build the REST operations at the base for blobs
-//this will be accessible from http://127.0.0.1:3000/blobs if the default route for / is left unchanged
+
 router.route('/')
-    //GET all blobs
+    //GET all prices
     .get(function(req, res, next) {
-        //retrieve all blobs from Monogo
-        mongoose.model('Blob').find({}, function (err, blobs) {
+        //retrieve all prices from Monogo
+        mongoose.model('Price').find({}, function (err, prices) {
               if (err) {
                   return console.error(err);
               } else {
                   //respond to both HTML and JSON. JSON responses require 'Accept: application/json;' in the Request Header
                   res.format({
-                      //HTML response will render the index.jade file in the views/blobs folder. We are also setting "blobs" to be an accessible variable in our jade view
+                      //HTML response will render the index.jade file in the views/prices folder. We are also setting "prices" to be an accessible variable in our jade view
                     html: function(){
-                        res.render('blobs/index', {
-                              title: 'All my Blobs',
-                              "blobs" : blobs
+                        res.render('prices/index', {
+                              title: 'All my Prices',
+                              "prices" : prices
                           });
                     },
-                    //JSON response will show all blobs in JSON format
+                    //JSON response will show all prices in JSON format
                     json: function(){
-                        res.json(blobs);
+                        res.json(prices);
                     }
                 });
               }     
         });
     })
-    //POST a new blob
+    //POST a new price
     .post(function(req, res) {
         // Get values from POST request. These can be done through forms or REST calls. These rely on the "name" attributes for forms
-        var name = req.body.name;
-        var badge = req.body.badge;
-        var dob = req.body.dob;
-        var company = req.body.company;
-        var isloved = req.body.isloved;
+
+	var stock_id = req.body.stock_id;
+	var date = req.body.date;
+	var adj_close = req.body.adj_close;
+	var close = req.body.close;
+	var high = req.body.high;
+	var low = req.body.low;
+	var open = req.body.open;
+	var volume= req.body.volume;
+
+//gy        var name = req.body.name;
+//gy        var badge = req.body.badge;
+//gy        var date = req.body.date;
+//gy        var company = req.body.company;
+//gy        var isloved = req.body.isloved;
         //call the create function for our database
-        mongoose.model('Blob').create({
-            name : name,
-            badge : badge,
-            dob : dob,
-            isloved : isloved
-        }, function (err, blob) {
+        mongoose.model('Price').create({
+//gy            name : name,
+//gy            badge : badge,
+//gy            date : date,
+//gy            isloved : isloved
+
+	      stock_id: stock_id,
+	      date: date,
+	      adj_close: adj_close,
+	      close: close,
+	      high: high,
+	      low: low,
+	      open: open,
+	      volume : volume
+
+
+
+        }, function (err, price) {
               if (err) {
                   res.send("There was a problem adding the information to the database.");
               } else {
-                  //Blob has been created
-                  console.log('POST creating new blob: ' + blob);
+                  //Price has been created
+                  console.log('POST creating new price: ' + price);
                   res.format({
                       //HTML response will set the location and redirect back to the home page. You could also create a 'success' page if that's your thing
                     html: function(){
                         // If it worked, set the header so the address bar doesn't still say /adduser
-                        res.location("blobs");
+                        res.location("prices");
                         // And forward to success page
-                        res.redirect("/blobs");
+                        res.redirect("/prices");
                     },
-                    //JSON response will show the newly created blob
+                    //JSON response will show the newly created price
                     json: function(){
-                        res.json(blob);
+                        res.json(price);
                     }
                 });
               }
         })
     });
-
-/* GET New Blob page. */
+/* GET New Price page. */
 router.get('/new', function(req, res) {
-    res.render('blobs/new', { title: 'Add New Blob' });
+    res.render('prices/new', { title: 'Add New Price' });
 });
-
 // route middleware to validate :id
 router.param('id', function(req, res, next, id) {
     //console.log('validating ' + id + ' exists');
     //find the ID in the Database
-    mongoose.model('Blob').findById(id, function (err, blob) {
+    mongoose.model('Price').findById(id, function (err, price) {
         //if it isn't found, we are going to repond with 404
         if (err) {
             console.log(id + ' was not found');
@@ -107,7 +127,7 @@ router.param('id', function(req, res, next, id) {
         //if it is found we continue on
         } else {
             //uncomment this next line if you want to see every JSON document response for every GET/PUT/DELETE call
-            //console.log(blob);
+            console.log(price);
             // once validation is done save the new item in the req
             req.id = id;
             // go to the next thing
@@ -115,78 +135,85 @@ router.param('id', function(req, res, next, id) {
         } 
     });
 });
-
 router.route('/:id')
   .get(function(req, res) {
-    mongoose.model('Blob').findById(req.id, function (err, blob) {
+    mongoose.model('Price').findById(req.id, function (err, price) {
       if (err) {
         console.log('GET Error: There was a problem retrieving: ' + err);
       } else {
-        console.log('GET Retrieving ID: ' + blob._id);
-        var blobdob = blob.dob.toISOString();
-        blobdob = blobdob.substring(0, blobdob.indexOf('T'))
+        console.log('GET Retrieving ID: ' + price._id);
+        var pricedate = price.date.toISOString();
+        pricedate = pricedate.substring(0, pricedate.indexOf('T'))
         res.format({
           html: function(){
-              res.render('blobs/show', {
-                "blobdob" : blobdob,
-                "blob" : blob
+              res.render('prices/show', {
+                "pricedate" : pricedate,
+                "price" : price
               });
           },
           json: function(){
-              res.json(blob);
+              res.json(price);
           }
         });
       }
     });
   });
 
+
 router.route('/:id/edit')
-	//GET the individual blob by Mongo ID
+	//GET the individual price by Mongo ID
 	.get(function(req, res) {
-	    //search for the blob within Mongo
-	    mongoose.model('Blob').findById(req.id, function (err, blob) {
+	    //search for the price within Mongo
+	    mongoose.model('Price').findById(req.id, function (err, price) {
 	        if (err) {
 	            console.log('GET Error: There was a problem retrieving: ' + err);
 	        } else {
-	            //Return the blob
-	            console.log('GET Retrieving ID: ' + blob._id);
-              var blobdob = blob.dob.toISOString();
-              blobdob = blobdob.substring(0, blobdob.indexOf('T'))
+	            //Return the price
+	            console.log('GET Retrieving ID: ' + price._id);
+              var pricedate = price.date.toISOString();
+              pricedate = pricedate.substring(0, pricedate.indexOf('T'))
 	            res.format({
 	                //HTML response will render the 'edit.jade' template
 	                html: function(){
-	                       res.render('blobs/edit', {
-	                          title: 'Blob' + blob._id,
-                            "blobdob" : blobdob,
-	                          "blob" : blob
+	                       res.render('prices/edit', {
+	                          title: 'Price' + price._id,
+                            "pricedate" : pricedate,
+	                          "price" : price
 	                      });
 	                 },
 	                 //JSON response will return the JSON output
 	                json: function(){
-	                       res.json(blob);
+	                       res.json(price);
 	                 }
 	            });
 	        }
 	    });
 	})
-	//PUT to update a blob by ID
+	//PUT to update a price by ID
 	.put(function(req, res) {
 	    // Get our REST or form values. These rely on the "name" attributes
-	    var name = req.body.name;
-	    var badge = req.body.badge;
-	    var dob = req.body.dob;
-	    var company = req.body.company;
-	    var isloved = req.body.isloved;
+	var stock_id = req.body.stock_id;
+	var date = req.body.date;
+	var adj_close = req.body.adj_close;
+	var close = req.body.close;
+	var high = req.body.high;
+	var low = req.body.low;
+	var open = req.body.open;
+	var volume= req.body.volume;
 
 	    //find the document by ID
-	    mongoose.model('Blob').findById(req.id, function (err, blob) {
+	    mongoose.model('Price').findById(req.id, function (err, price) {
 	        //update it
-	        blob.update({
-	            name : name,
-	            badge : badge,
-	            dob : dob,
-	            isloved : isloved
-	        }, function (err, blobID) {
+	        price.update({
+	      stock_id: stock_id,
+	      date: date,
+	      adj_close: adj_close,
+	      close: close,
+	      high: high,
+	      low: low,
+	      open: open,
+	      volume : volume
+	        }, function (err, priceID) {
 	          if (err) {
 	              res.send("There was a problem updating the information to the database: " + err);
 	          } 
@@ -194,40 +221,40 @@ router.route('/:id/edit')
 	                  //HTML responds by going back to the page or you can be fancy and create a new view that shows a success page.
 	                  res.format({
 	                      html: function(){
-	                           res.redirect("/blobs/" + blob._id);
+	                           res.redirect("/prices/" + price._id);
 	                     },
 	                     //JSON responds showing the updated values
 	                    json: function(){
-	                           res.json(blob);
+	                           res.json(price);
 	                     }
 	                  });
 	           }
 	        })
 	    });
 	})
-	//DELETE a Blob by ID
+	//DELETE a Price by ID
 	.delete(function (req, res){
-	    //find blob by ID
-	    mongoose.model('Blob').findById(req.id, function (err, blob) {
+	    //find price by ID
+	    mongoose.model('Price').findById(req.id, function (err, price) {
 	        if (err) {
 	            return console.error(err);
 	        } else {
 	            //remove it from Mongo
-	            blob.remove(function (err, blob) {
+	            price.remove(function (err, price) {
 	                if (err) {
 	                    return console.error(err);
 	                } else {
 	                    //Returning success messages saying it was deleted
-	                    console.log('DELETE removing ID: ' + blob._id);
+	                    console.log('DELETE removing ID: ' + price._id);
 	                    res.format({
 	                        //HTML returns us back to the main page, or you can create a success page
 	                          html: function(){
-	                               res.redirect("/blobs");
+	                               res.redirect("/prices");
 	                         },
 	                         //JSON returns the item with the message that is has been deleted
 	                        json: function(){
 	                               res.json({message : 'deleted',
-	                                   item : blob
+	                                   item : price
 	                               });
 	                         }
 	                      });
@@ -236,5 +263,4 @@ router.route('/:id/edit')
 	        }
 	    });
 	});
-
 module.exports = router;

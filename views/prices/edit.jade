@@ -1,0 +1,27 @@
+extends ../layout
+
+block content
+	h1.
+		Price ID #{price._id}
+	form(action='/prices/#{price._id}/edit',method='post',name='updateprice',enctype='application/x-www-form-urlencoded')
+		p stock_id:
+			input#inputstock_id(type='number', value='#{price.stock_id}', name='stock_id')
+		p date:
+			input#inputdate(type='date', value='#{pricedate}', name='date')
+		p adj_close:
+			input#inputadj_close(type='number', value='#{price.adj_close}', name='adj_close')
+		p close:
+			input#inputclose(type='number', value='#{price.close}', name='close')
+		p high:
+			input#inputhigh(type='number', value='#{price.high}', name='high')
+		p low:
+			input#inputlow(type='number', value='#{price.low}', name='low')
+		p open:
+			input#inputopen(type='number', value='#{price.open}', name='open')
+		p volume:
+			input#inputvolume(type='number', value='#{price.volume}', name='volume')
+		p
+			input(type='hidden',value='PUT',name='_method')
+		p
+			button#btnSubmit(type='submit').
+				Update

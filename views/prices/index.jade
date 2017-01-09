@@ -1,0 +1,25 @@
+extends ../layout
+
+block content
+    h1.
+         #{title}
+    ul
+        - each price, i in prices
+            li
+                = price.stock_id
+                = price.date
+                = price.adj_close
+                = price.close
+                = price.high
+                = price.low
+                = price.open
+                = price.volume
+                = price._id
+                form(action='/prices/#{price._id}/edit',method='post',enctype='application/x-www-form-urlencoded')
+                    input(type='hidden',value='DELETE',name='_method')
+                    button(type='submit').
+                        Delete
+                p 
+                    a(href='/prices/#{price._id}/edit') Edit
+                p
+                    a(href='/prices/#{price._id}') Show

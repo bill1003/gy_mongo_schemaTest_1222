@@ -1,0 +1,24 @@
+extends ../layout
+
+block content
+	h1.
+		#{title}
+	form#formAddBlob(name="addblob",method="post",action="/prices")
+		p stock_id: 
+			input#inputstock_id(type="number", step="any", placeholder="ex. 2330", name="stock_id")
+		p date: 
+			input#inputdate(type="date", placeholder="ex. 2000-01-12,30", name="date")
+		p adj_close: 
+			input#inputadj_close(type="number", step="any", placeholder="ex. 30.1172", name="adj_close")
+		p close: 
+			input#inputclose(type="number", step="any", placeholder="ex. 84.4815", name="close")
+		p high: 
+			input#inputhigh(type="number", step="any", placeholder="ex. 84.4815", name="high")
+		p low: 
+			input#inputlow(type="number", step="any", placeholder="ex. 82.1478", name="low")
+		p open: 
+			input#inputopen(type="number", step="any", placeholder="ex. 82.6146", name="open")
+		p volume: 
+			input#inputvolume(type="number", step="any", placeholder="ex. 160662500", name="volume")
+		p
+			button#btnSubmit(type="submit") submit
