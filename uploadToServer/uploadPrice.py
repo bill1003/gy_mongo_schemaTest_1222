@@ -13,11 +13,15 @@ for row in csv.DictReader(f):
 	row['stock_id']=matchObj.group(1)
 	url = "http://140.112.48.141:40053/prices"
 	if(counter!=-1):
-		jsonFile = open ('file.json','w')
-		jsonObject=json.dump(row,jsonFile)
-		r = requests.post(url, data=row)
+		#jsonFile = open ('file.json','w')
+		#jsonObject=json.dump(row,jsonFile)
+		#r = requests.post(url, data=row)
 		#jsonFile.write('\n')
 		print(row)
+		headers = {'Content-Type': 'application/json'}
+		r = requests.post(url, data=json.dumps(row), headers=headers)
+		#headers = {'Content-type': 'application/json'}
+		#r=requests.post(url, data="file.json")
 		#requests.post(url, data="file.json")
 		#cmd="curl -H \"Content-Type: application/json\" --data @file.json http://140.112.48.141:40053/prices" 
 		#cmd="curl -H \"Content-Type: application/json\" -d @file.json http://140.112.48.141:40053/prices" 

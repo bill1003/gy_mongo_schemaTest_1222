@@ -2,6 +2,9 @@ var express = require('express'),
     router = express.Router(),
     mongoose = require('mongoose'), //mongo connection
     bodyParser = require('body-parser'), //parses information from POST
+    querystring = require('querystring'),
+//    jQuery = require('jQuery'),
+//    jsdom = require('jsdom'),
     methodOverride = require('method-override'); //used to manipulate POST
 
 
@@ -105,6 +108,72 @@ router.route('/')
 router.get('/new', function(req, res) {
     res.render('prices/new', { title: 'Add New Price' });
 });
+
+//function priceConverter(volume,open,low,high,close,adj_close,date) {
+function priceConverter(volume,open,low,high,close,adj_close,date,stock_id) {
+	var objectValueArray = [volume,open,low,high,close,adj_close,date,stock_id];
+	var objectNameArray= ['volume','open','low','high','close','adj_close','date','stock_id'];
+	console.log('c_close=',close); 
+	console.log('objectValueArray[0]',objectValueArray[0]); 
+	var sumArray =[];
+	for (i = 0; i < 8; i++) {
+		if(typeof objectValueArray[i]!="undefined"){
+			var stringTemp="\""+objectNameArray[i]+"\""+":\""+objectValueArray[i]+"\"";
+			console.log(stringTemp); 
+			sumArray.push(stringTemp);
+		}
+	}
+	console.log('sumArray.length=',sumArray.length); 
+	var sumString="{";
+	for (i = 0; i < sumArray.length; i++) {
+		sumString=sumString+sumArray[i];
+		if(i==sumArray.length-1) {
+			sumString=sumString+"}"
+		} else {
+			sumString=sumString+",";
+		}
+	}
+	return JSON.parse(sumString);
+}
+router.get('/findPrice', function(req, res) {
+        console.log('inside_1 ' , req.url);
+
+	var query = require('url').parse(req.url,true).query;
+	var q_stock_id = query.stock_id;
+	var q_volume = query.volume;
+	var q_open= query.open;
+	var q_low= query.low;
+	var q_high= query.high;
+	var q_close= query.close;
+	var q_adj_close= query.adj_close;
+	var q_date=query.date;
+	var queryObject="";
+	var queryObject=priceConverter(q_volume,q_open,q_low,q_high,q_close,q_adj_close,q_date,q_stock_id);
+        console.log('q_stock_id=',q_stock_id);
+        console.log('q_volume=',q_volume);
+        console.log('q_open=',q_open);
+        console.log('q_low=',q_low);
+        console.log('q_high=',q_high);
+        console.log('q_close=',q_close);
+        console.log('q_adj_close=',q_adj_close);
+        console.log('q_date=',q_date);
+        console.log('inside_2 ' , queryObject);
+        console.log('typeof ' , typeof queryObject);
+  //  mongoose.model('Price').find({'stock_id':q_stock_id}, function (err, price) {
+    mongoose.model('Price').find(queryObject, function (err, price) {
+//    mongoose.model('Price').find(JSON.stringify(eval(queryObject)), function (err, price) {
+      if (err) {
+        console.log('GET Error: There was a problem retrieving: ' + price);
+      } else {
+        //console.log(price);
+        res.format({
+		'application/json': function(){
+	      	res.send(price);
+   		}
+	});
+      }
+    });
+  });
 // route middleware to validate :id
 router.param('id', function(req, res, next, id) {
     //console.log('validating ' + id + ' exists');
@@ -158,6 +227,58 @@ router.route('/:id')
       }
     });
   });
+
+router.route('/:id')
+  .get(function(req, res) {
+    mongoose.model('Price').findById(req.id, function (err, price) {
+      if (err) {
+        console.log('GET Error: There was a problem retrieving: ' + err);
+      } else {
+        console.log('GET Retrieving ID: ' + price._id);
+        var pricedate = price.date.toISOString();
+        pricedate = pricedate.substring(0, pricedate.indexOf('T'))
+        res.format({
+          html: function(){
+              res.render('prices/show', {
+                "pricedate" : pricedate,
+                "price" : price
+              });
+          },
+          json: function(){
+              res.json(price);
+          }
+        });
+      }
+    });
+  });
+
+//router.get('/new', function(req, res) {
+//    res.render('prices/new', { title: 'Add New Price' });
+//});
+//
+//router.route('/stock/:stock_id')
+//  .get(function(req, res) {
+//    mongoose.model('Price').findById(req.stock_id, function (err, price) {
+//      if (err) {
+//        console.log('GET Error: There was a problem retrieving: ' + err);
+//      } else {
+//        console.log('GET Retrieving ID: ' + price._id);
+//        var pricedate = price.date.toISOString();
+//        pricedate = pricedate.substring(0, pricedate.indexOf('T'))
+//        res.format({
+//          html: function(){
+//              res.render('prices/show', {
+//                "pricedate" : pricedate,
+//                "price" : price
+//              });
+//          },
+//          json: function(){
+//              res.json(price);
+//          }
+//        });
+//      }
+//    });
+//  });
 
 
 router.route('/:id/edit')
