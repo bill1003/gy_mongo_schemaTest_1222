@@ -30,6 +30,8 @@
 # Web View for Price Entry
 
 > http://140.112.48.141:40053/prices/
+
+
 # Sample Code to http Post Data to Server (Python)
 
 <#Please put price folder beside your python code>
