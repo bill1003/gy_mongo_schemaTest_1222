@@ -14,9 +14,10 @@
 	}
  
 # Web View for Price Entry
+
 > http://140.112.48.141:40053/prices/
 # Sample Code for httpPost Data to Server(Python)
-#Please put price folder beside your python code
+> PS. Please put price folder beside your python code
 
     import csv
     import json
