@@ -60,10 +60,14 @@
     Ex1. 
     If you want to get match result for stock_id = 2330 
     you just need to access url  
-	    http://140.112.48.141:40053/prices/findPrice?stock_id=2331
+	
+
+http://140.112.48.141:40053/prices/findPrice?stock_id=2331
     
     Ex2. 
     If you want to get match result for stock_id = 2330 & volume = 5752400
     you just need to access url  
-	    http://140.112.48.141:40053/prices/findPrice?stock_id=2331&volume=5752400
+	
+
+http://140.112.48.141:40053/prices/findPrice?stock_id=2331&volume=5752400
 
